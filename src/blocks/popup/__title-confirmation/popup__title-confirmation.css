@@ -1,0 +1,15 @@
+.popup__title_confirmation{
+  font-weight: 900;
+  font-size: 24px;
+  line-height: 29px;
+  margin-top: 0;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px){
+.popup__title_confirmation{
+  font-size: 18px;
+  line-height: 22px;
+}
+}

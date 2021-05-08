@@ -1,0 +1,15 @@
+.footer__heading{
+  color: #545454;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 22px;
+  margin: 0;
+}
+
+@media (max-width: 768px){
+  .footer__heading{
+    font-size: 14px;
+    line-height: 17px;
+  }
+}
