@@ -10,6 +10,12 @@ import AddPlacePopup from './AddPlacePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import api from '../utils/api';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { Route, Switch, Redirect, useHistory, BrowserRouter } from 'react-router-dom';
+import Login from './Login';
+import Register from './Register';
+import ProtectedRoute from './ProtectedRoute';
+import InfoTooltip from './InfoTooltip';
+import * as auth from '../utils/auth';
 
 
 function App() {
@@ -20,6 +26,11 @@ function App() {
   const [selectedCard, setSelectedCard] = useState(null);
   const [cards, setCards] = useState([]);
   const [currentUser, setCurrentUser] = useState({ _id: '', name: '', avatar: '', about: '' });
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+  const [infoTooltipSuccess, setInfoTooltipSuccess] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const history = useHistory();
 
   useEffect(() => {
     api
@@ -43,6 +54,24 @@ function App() {
         console.error(err);
       });
   },[]);
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      const token = localStorage.getItem('token');
+      auth
+        .checkToken(token)
+        .then((res) => {
+          if (res.data) {
+            setLoggedIn(true);
+            setUserEmail(res.data.email);
+            console.log(loggedIn)
+            history.push('/');
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }, []);
+
 
 
 
@@ -120,7 +149,6 @@ function App() {
     });
   }
 
-
   function closeAllPopups() {
     setIsEditProfileOpen(false);
     setIsAddPlacePopupOpen(false);
@@ -128,12 +156,26 @@ function App() {
     setSelectedCard(null)
   }
 
+  function handleLogin() {
+    setLoggedIn(true);
+  }
 
-  return (
-  <CurrentUserContext.Provider value={currentUser}>
-  <div className="container">
-    <div className ="page">
-    <Header />
+  function handleLogout() {
+    setLoggedIn(false);
+    localStorage.removeItem('token');
+  }
+
+  function handleInfoTooltipClose() {
+    setIsInfoTooltipOpen(false);
+  }
+
+  function handleInfoTooltipOpen(isSuccess) {
+    setIsInfoTooltipOpen(true);
+    setInfoTooltipSuccess(isSuccess);
+  }
+
+  const mainPage = (
+    <>
     <Main 
       cards={cards}
       onEditAvatar={handleEditAvatarClick}
@@ -146,16 +188,38 @@ function App() {
     <Footer />
     <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser}/>
     <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit}/>
-    <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}
-/>
-    <PopupWithForm
-      name="delete-confirm"
-      title="Вы уверены?"
-      submitText="Да"
-      onClose={closeAllPopups}
-    >
-    </PopupWithForm>
-    <ImagePopup card={selectedCard} onClose={closeAllPopups}/>
+    <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar}/>
+    <PopupWithForm name="delete-confirm" title="Вы уверены?" submitText="Да" onClose={closeAllPopups}/>
+    <ImagePopup card={selectedCard} onClose={closeAllPopups}/> 
+    </>
+  )
+
+  return (
+  
+  <CurrentUserContext.Provider value={currentUser}>
+  <div className="container">
+    <div className ="page">
+    <Header loggedIn={loggedIn} email={userEmail} handleLogout={handleLogout}/>
+    <Switch>
+      <Route path="/sign-up">
+        <Register registerHandler={handleInfoTooltipOpen} />
+      </Route>
+      <Route path="/sign-in">
+        <Login
+          handleLogin={handleLogin}
+          handleLoginFailed={() => {
+            handleInfoTooltipOpen(false);
+          }}
+        />
+      </Route>
+      <ProtectedRoute path="/" loggedIn={loggedIn} component={mainPage} />
+      <Route path="*">{loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}</Route>
+    </Switch>
+    <InfoTooltip
+      isOpen={isInfoTooltipOpen}
+      onClose={handleInfoTooltipClose}
+      isSuccess={infoTooltipSuccess}
+    />
   </div>
 </div>
 </CurrentUserContext.Provider>

@@ -1,0 +1,6 @@
+.popup__auth-image {
+  display: flex;
+  justify-self: center;
+  margin-top: 26px;
+  height: 120px;  
+}

@@ -1,0 +1,12 @@
+.sign-form__input {
+  height: 27px;
+  width: 100%;
+  color: #ccc;
+  border: 0;
+  border-bottom: 1px solid #ccc;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  background: #000;
+}

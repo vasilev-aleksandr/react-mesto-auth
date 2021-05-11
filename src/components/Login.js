@@ -1,0 +1,82 @@
+import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
+import * as auth from '../utils/auth';
+import SignForm from './SignForm';
+
+function Login(props) {
+  const history = useHistory();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  function submitHandler(e) {
+    e.preventDefault();
+
+    if (!email || !password) {
+      props.handleLoginFailed();
+      return;
+    }
+
+    auth
+      .authorize(password, email)
+      .then((data) => {
+        if (data.token) {
+          props.handleLogin();
+          history.push('/');
+        } else {
+          props.handleLoginFailed();
+        }
+      })
+      .catch((err) => {
+        console.log(err); 
+        props.handleLoginFailed();
+      });
+  }
+
+  const hint = (
+    <div className="sign-form__transition-hint">
+      Ещё не зарегистрированы?{' '}
+      <Link className="sign-form__link" to="/sign-up">
+        Регистрация
+      </Link>
+    </div>
+  );
+
+  return (
+    <SignForm name="sign-in" onSubmit={submitHandler} title="Вход" submitText="Войти" hint={hint}>
+      <label className="sign-form__field">
+        <input
+          className="sign-form__input"
+          id="input-sign-email"
+          name="email"
+          type="email"
+          value={email}
+          onChange={(evt) => {
+            setEmail(evt.target.value);
+          }}
+          placeholder="Email"
+          required
+        />
+        <span
+          className="sign-form__input-error sign-form__input-error_active"
+          id="input-edit-name-error"
+        ></span>
+      </label>
+      <label className="sign-form__field">
+        <input
+          className="sign-form__input"
+          id="input-sign-password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={(evt) => {
+            setPassword(evt.target.value);
+          }}
+          placeholder="Пароль"
+          required
+        />
+      </label>
+    </SignForm>
+  );
+}
+
+export default Login;

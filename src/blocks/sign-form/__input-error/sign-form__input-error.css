@@ -1,0 +1,10 @@
+.sign-form__input-error {
+  display: none;
+  position: absolute;
+  top: calc(100% + 5px);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 15px;
+  color: #f00;
+}

@@ -1,0 +1,16 @@
+.sign-form__field {
+  position: relative;
+  margin:auto;
+  margin-bottom: 30px;
+  display: flex;
+  width: 100%;
+  max-width: 358px;
+}
+
+.sign-form__field:first-of-type {
+  margin-top: 50px;
+}
+
+.sign-form__field:last-of-type {
+  margin-bottom: 0px;
+}
