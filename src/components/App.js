@@ -175,6 +175,7 @@ function App() {
       })
       .catch((err) => {
         handleInfoTooltipOpen(false);
+        console.log(err);
       });
   }
 
@@ -189,8 +190,9 @@ function App() {
       } else {
         handleInfoTooltipOpen(false);
       }
-    }).catch(()=>{
+    }).catch((err)=>{
       handleInfoTooltipOpen(false);
+      console.log(err);
     });
 
   }
