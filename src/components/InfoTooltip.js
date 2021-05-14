@@ -7,6 +7,8 @@ function InfoTooltip(props) {
   const history = useHistory();
   const image = props.isSuccess ? success : error;
   const popupText = props.isSuccess ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.';
+  const imageAlt = props.isSuccess ? 'Успешная регистрация' : 'Что-то пошло не так';
+
 
   function closeHandler() {
     props.onClose();
@@ -35,6 +37,7 @@ function InfoTooltip(props) {
           <img
             className="popup__auth-image"
             src={image}
+            alt={imageAlt}
           />
           <h2 className="popup__text">{popupText}</h2>
         </form>

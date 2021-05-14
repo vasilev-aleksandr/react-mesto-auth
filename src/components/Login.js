@@ -1,35 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import * as auth from '../utils/auth';
+import { Link } from 'react-router-dom';
 import SignForm from './SignForm';
 
-function Login(props) {
-  const history = useHistory();
+function Login({ handleLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  
   function submitHandler(e) {
-    e.preventDefault();
-
-    if (!email || !password) {
-      props.handleLoginFailed();
-      return;
-    }
-
-    auth
-      .authorize(password, email)
-      .then((data) => {
-        if (data.token) {
-          props.handleLogin();
-          history.push('/');
-        } else {
-          props.handleLoginFailed();
-        }
-      })
-      .catch((err) => {
-        console.log(err); 
-        props.handleLoginFailed();
-      });
+  handleLogin(e, email, password)
   }
 
   const hint = (

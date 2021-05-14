@@ -9,13 +9,13 @@ import EditProfilePopup from './EditProfilePopup';
 import AddPlacePopup from './AddPlacePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import api from '../utils/api';
+import auth from '../utils/auth';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { Route, Switch, Redirect, useHistory, BrowserRouter } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import Login from './Login';
 import Register from './Register';
 import ProtectedRoute from './ProtectedRoute';
 import InfoTooltip from './InfoTooltip';
-import * as auth from '../utils/auth';
 
 
 function App() {
@@ -64,13 +64,12 @@ function App() {
           if (res.data) {
             setLoggedIn(true);
             setUserEmail(res.data.email);
-            console.log(loggedIn)
             history.push('/');
           }
         })
         .catch((err) => console.log(err));
     }
-  }, []);
+  }, [history, loggedIn]);
 
 
 
@@ -149,6 +148,7 @@ function App() {
     });
   }
 
+
   function closeAllPopups() {
     setIsEditProfileOpen(false);
     setIsAddPlacePopupOpen(false);
@@ -156,9 +156,45 @@ function App() {
     setSelectedCard(null)
   }
 
-  function handleLogin() {
-    setLoggedIn(true);
+  function handleLogin(e, email, password) {
+    e.preventDefault();
+    
+    if (!email || !password) {
+      handleInfoTooltipOpen(false);
+      return;
+    }
+    auth
+      .authorize({password, email})
+      .then((data) => {
+        if (data.token) {
+          setLoggedIn(true);
+          history.push('/');
+        } else {
+          handleInfoTooltipOpen(false);
+        }
+      })
+      .catch((err) => {
+        handleInfoTooltipOpen(false);
+      });
   }
+
+  function handleRegister(e, email, password) {
+    e.preventDefault();
+
+    auth
+    .register({password, email})
+    .then((res) => {
+      if (res.data) {
+        handleInfoTooltipOpen(true);
+      } else {
+        handleInfoTooltipOpen(false);
+      }
+    }).catch(()=>{
+      handleInfoTooltipOpen(false);
+    });
+
+  }
+  
 
   function handleLogout() {
     setLoggedIn(false);
@@ -202,17 +238,12 @@ function App() {
     <Header loggedIn={loggedIn} email={userEmail} handleLogout={handleLogout}/>
     <Switch>
       <Route path="/sign-up">
-        <Register registerHandler={handleInfoTooltipOpen} />
+        <Register handleRegister={handleRegister} />
       </Route>
       <Route path="/sign-in">
-        <Login
-          handleLogin={handleLogin}
-          handleLoginFailed={() => {
-            handleInfoTooltipOpen(false);
-          }}
-        />
+        <Login handleLogin={handleLogin} />
       </Route>
-      <ProtectedRoute path="/" loggedIn={loggedIn} component={mainPage} />
+      <ProtectedRoute exact path="/" loggedIn={loggedIn} component={mainPage} />
       <Route path="*">{loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}</Route>
     </Switch>
     <InfoTooltip

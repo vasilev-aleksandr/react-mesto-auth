@@ -10,7 +10,9 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
   
   return (
     <div className="place">
-        <div className="place__photo" onClick={() => {onCardClick(card);}}style={{ backgroundImage: `url(${card.link})` }} alt={card.name}/>
+        <div className="place__photo-container">
+          <img className="place__photo" src={card.link} alt={card.name} onClick={() => {onCardClick(card);}}></img>
+        </div>
         <div className="place__description">
           <h3 className='place__heading'>{card.name}</h3>
           <div className ='place__like-container'>

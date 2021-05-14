@@ -87,7 +87,7 @@ const api = new Api ({
     authorization: '5272ec4f-012a-4dd0-babb-fcf2aac8eb04',
     'Content-Type': 'application/json'
   }
-  })
+})
 
 export default api
 
